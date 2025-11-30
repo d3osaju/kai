@@ -1,0 +1,18 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    purge|remove)
+        # Remove sudoers file
+        rm -f /etc/sudoers.d/kai-assistant
+        
+        # Remove virtual environment
+        rm -rf /opt/kai-assistant
+        
+        echo "kai-assistant removed."
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

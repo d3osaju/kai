@@ -116,7 +116,6 @@ class GoogleTTS:
             temp_file.close()
             self.temp_files.append(temp_file.name)
             
-            print(f"[DEBUG] Generating audio: {temp_file.name}")
             tts.save(temp_file.name)
             
             if not self.is_speaking:
@@ -150,8 +149,6 @@ class GoogleTTS:
             return
             
         try:
-            print(f"[DEBUG] Playing: {audio_file}")
-            
             mpg123_cmd = ['/usr/bin/mpg123', '-a', self.audio_device, '-q', audio_file]
             
             self.current_process = subprocess.Popen(mpg123_cmd,
@@ -185,27 +182,22 @@ class GoogleTTS:
             temp_file.close()
             self.temp_files.append(temp_file.name)
             
-            print(f"[DEBUG] Saving TTS to: {temp_file.name}")
             tts.save(temp_file.name)
-            print(f"[DEBUG] TTS file saved, size: {os.path.getsize(temp_file.name)} bytes")
             
             # Check again before processing
             if not self.is_speaking:
                 return
             
             # Play the audio file with speed control
-            # mpg123 doesn't support speed directly, so we use sox for speed control
             if self.speed != 1.0 and not self.slow:
                 # Use sox to adjust speed
                 speed_file = tempfile.NamedTemporaryFile(delete=False, suffix='.mp3')
                 speed_file.close()
                 self.temp_files.append(speed_file.name)
                 
-                print(f"[DEBUG] Adjusting speed with sox...")
                 result = subprocess.run(['sox', temp_file.name, speed_file.name, 'tempo', str(self.speed)],
                              capture_output=True, text=True)
                 if result.returncode != 0:
-                    print(f"[DEBUG] Sox error: {result.stderr}")
                     playback_file = temp_file.name
                 else:
                     playback_file = speed_file.name
@@ -216,9 +208,6 @@ class GoogleTTS:
             if not self.is_speaking:
                 return
             
-            # Play the audio
-            print(f"[DEBUG] Playing audio with mpg123: {playback_file} on device: {self.audio_device}")
-            
             # Build mpg123 command with audio device
             mpg123_cmd = ['/usr/bin/mpg123', '-a', self.audio_device, '-q', playback_file]
             
@@ -227,9 +216,7 @@ class GoogleTTS:
                 self.current_process = subprocess.Popen(mpg123_cmd,
                                                        stdout=subprocess.DEVNULL,
                                                        stderr=subprocess.PIPE)
-                stderr_output = self.current_process.communicate()[1]
-                if self.current_process.returncode and self.current_process.returncode != 0:
-                    print(f"[DEBUG] mpg123 error: {stderr_output.decode() if stderr_output else 'Unknown error'}")
+                self.current_process.communicate()
                 self.current_process = None
             else:
                 self.current_process = subprocess.Popen(mpg123_cmd,
@@ -243,9 +230,7 @@ class GoogleTTS:
             print(f"Error: Required tool not found: {e}")
             print("Install with: sudo apt-get install mpg123 sox")
         except Exception as e:
-            print(f"TTS Error: {e}")
-            import traceback
-            traceback.print_exc()
+            pass  # Silently handle errors
     
     def _cleanup_old_files(self):
         """Clean up old temporary files."""

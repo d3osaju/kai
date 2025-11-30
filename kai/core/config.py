@@ -26,7 +26,7 @@ class Config:
             "tts": "piper-en_US-lessac-medium",
         },
         "plugins": {
-            "enabled": ["system_control", "general_query"],
+            "enabled": ["system_control", "general_query", "command_executor"],
             "disabled": [],
         },
     }

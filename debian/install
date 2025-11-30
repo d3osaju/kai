@@ -1,1 +1,2 @@
 requirements.txt usr/share/kai-assistant/
+debian/kai-assistant.sudoers etc/sudoers.d/kai-assistant

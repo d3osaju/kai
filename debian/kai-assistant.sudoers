@@ -1,0 +1,12 @@
+# Allow kai-assistant to run apt commands without password
+# This is installed to /etc/sudoers.d/kai-assistant
+
+# Allow all users to run apt-get install via kai without password
+%sudo ALL=(ALL) NOPASSWD: /usr/bin/apt-get install *
+%sudo ALL=(ALL) NOPASSWD: /usr/bin/apt-get update
+%sudo ALL=(ALL) NOPASSWD: /usr/bin/apt-cache show *
+
+# Alternative: Allow specific user (replace 'username' with actual username)
+# username ALL=(ALL) NOPASSWD: /usr/bin/apt-get install *
+# username ALL=(ALL) NOPASSWD: /usr/bin/apt-get update
+# username ALL=(ALL) NOPASSWD: /usr/bin/apt-cache show *

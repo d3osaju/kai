@@ -30,7 +30,27 @@ case "$1" in
             fi
         fi
         
+        # Set proper permissions for sudoers file
+        if [ -f /etc/sudoers.d/kai-assistant ]; then
+            chmod 0440 /etc/sudoers.d/kai-assistant
+            chown root:root /etc/sudoers.d/kai-assistant
+        fi
+        
+        # Update config to enable command_executor plugin if config exists
+        CONFIG_FILE="$HOME/.config/kai/config.yaml"
+        if [ -f "$CONFIG_FILE" ]; then
+            # Check if command_executor is already in the config
+            if ! grep -q "command_executor" "$CONFIG_FILE"; then
+                # Add command_executor to enabled plugins
+                sed -i 's/enabled: \[/enabled: [command_executor, /' "$CONFIG_FILE" 2>/dev/null || true
+            fi
+        fi
+        
         echo "kai-assistant installation complete!"
+        echo ""
+        echo "✓ Passwordless sudo configured for apt commands"
+        echo "✓ Kai can now install packages without asking for password"
+        echo ""
         echo "Run 'kai --help' to get started."
         ;;
 esac
