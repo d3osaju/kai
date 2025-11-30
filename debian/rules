@@ -1,0 +1,20 @@
+#!/usr/bin/make -f
+
+export PYBUILD_NAME=kai-assistant
+
+%:
+	dh $@ --with python3 --buildsystem=pybuild
+
+override_dh_auto_test:
+	# Skip tests during build (they require audio devices)
+	@echo "Skipping tests (audio device required)"
+
+override_dh_auto_install:
+	dh_auto_install
+	# Replace the generated kai script with our wrapper
+	rm -f debian/kai-assistant/usr/bin/kai
+	install -D -m 755 debian/kai-wrapper.sh debian/kai-assistant/usr/bin/kai
+
+override_dh_auto_clean:
+	dh_auto_clean
+	rm -rf build dist *.egg-info

@@ -1,0 +1,40 @@
+#!/bin/bash
+set -e
+
+case "$1" in
+    configure)
+        echo "Installing Python dependencies for kai-assistant..."
+        
+        # Install to /opt to avoid system package conflicts
+        INSTALL_DIR="/opt/kai-assistant"
+        mkdir -p "$INSTALL_DIR"
+        
+        # Create virtual environment
+        python3 -m venv "$INSTALL_DIR/venv" 2>/dev/null || true
+        
+        # Install dependencies in the venv
+        if [ -d "$INSTALL_DIR/venv" ]; then
+            # First install from requirements.txt
+            if [ -f /usr/share/kai-assistant/requirements.txt ]; then
+                "$INSTALL_DIR/venv/bin/pip" install --quiet \
+                    -r /usr/share/kai-assistant/requirements.txt \
+                    2>/dev/null || echo "Warning: Some dependencies may need manual installation"
+            fi
+            
+            # Copy kai package from system to venv
+            if [ -d /usr/lib/python3/dist-packages/kai ]; then
+                cp -r /usr/lib/python3/dist-packages/kai \
+                    "$INSTALL_DIR/venv/lib/python"*/site-packages/ 2>/dev/null || true
+                cp /usr/lib/python3/dist-packages/kai_assistant-*.egg-info \
+                    "$INSTALL_DIR/venv/lib/python"*/site-packages/ 2>/dev/null || true
+            fi
+        fi
+        
+        echo "kai-assistant installation complete!"
+        echo "Run 'kai --help' to get started."
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

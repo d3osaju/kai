@@ -1,0 +1,38 @@
+Source: kai-assistant
+Section: utils
+Priority: optional
+Maintainer: Kai Contributors <kai@example.com>
+Build-Depends: debhelper (>= 11),
+               dh-python,
+               python3-all,
+               python3-setuptools
+Standards-Version: 4.5.0
+Homepage: https://github.com/yourusername/kai
+
+Package: kai-assistant
+Architecture: all
+Depends: ${python3:Depends},
+         ${misc:Depends},
+         python3-pip,
+         python3-venv,
+         python3-yaml,
+         python3-click,
+         python3-numpy,
+         portaudio19-dev,
+         python3-pyaudio,
+         mpg123,
+         sox
+Recommends: ollama
+Description: Open-source AI assistant for Linux with voice interaction
+ Kai is an intelligent voice-activated assistant that runs locally on Linux.
+ It features speech recognition, text-to-speech, and integration with
+ local LLM models via Ollama.
+ .
+ Features:
+  - Voice interaction with wake word detection
+  - Local LLM integration (Ollama)
+  - Plugin system for extensibility
+  - Privacy-focused (runs entirely locally)
+ .
+ Note: Some Python dependencies (ollama, rich, SpeechRecognition, gTTS)
+ will be installed via pip during post-installation.

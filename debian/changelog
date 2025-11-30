@@ -1,0 +1,22 @@
+kai-assistant (1.0.0-1) unstable; urgency=medium
+
+  * Major release: Production-ready voice assistant
+  * Voice-optimized LLM responses (no markdown in speech)
+  * Conversation mode (stay awake for follow-up questions)
+  * Keyboard interrupt support (press SPACE to stop)
+  * Volume control and audio device selection
+  * Complete Debian packaging with isolated dependencies
+  * Improved TTS streaming with proper interrupt handling
+  * Better error handling and debug output
+
+ -- Kai Contributors <kai@example.com>  Mon, 01 Dec 2025 00:00:00 +0000
+
+kai-assistant (0.9.0-1) unstable; urgency=medium
+
+  * Initial release
+  * Voice interaction with wake word detection
+  * Local LLM integration via Ollama
+  * Plugin system for extensibility
+  * GUI settings interface
+
+ -- Kai Contributors <kai@example.com>  Mon, 01 Dec 2025 00:00:00 +0000
