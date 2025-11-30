@@ -489,8 +489,8 @@ python tests/test_voice.py                      # Test speech recognition
 
 ## 📞 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/kai/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/kai/discussions)
+- **Issues**: [GitHub Issues](https://github.com/d3osaju/kai/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/d3osaju/kai/discussions)
 
 ---
 
