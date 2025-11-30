@@ -20,9 +20,14 @@ class KaiSettingsApp:
         style = ttk.Style()
         style.theme_use('clam')
         
+        self.ollama_status = ""
+        
         self.setup_ui()
         self.load_settings()
         self.load_ollama_models()
+        
+        # Update status label after loading models
+        self.status_label.config(text=self.ollama_status)
         
     def setup_ui(self):
         """Setup the user interface."""
@@ -37,7 +42,7 @@ class KaiSettingsApp:
         # Language
         ttk.Label(main_frame, text="Language:", font=('Arial', 11)).grid(row=1, column=0, sticky=tk.W, pady=10)
         self.language_var = tk.StringVar()
-        language_combo = ttk.Combobox(main_frame, textvariable=self.language_var, state='readonly', width=30)
+        language_combo = ttk.Combobox(main_frame, textvariable=self.language_var, width=30)
         language_combo['values'] = (
             'en-US - English (US)',
             'en-GB - English (UK)',
@@ -54,8 +59,12 @@ class KaiSettingsApp:
         # LLM Model
         ttk.Label(main_frame, text="LLM Model:", font=('Arial', 11)).grid(row=2, column=0, sticky=tk.W, pady=10)
         self.llm_var = tk.StringVar()
-        self.llm_combo = ttk.Combobox(main_frame, textvariable=self.llm_var, state='readonly', width=30)
+        self.llm_combo = ttk.Combobox(main_frame, textvariable=self.llm_var, width=30)
         self.llm_combo.grid(row=2, column=1, pady=10, padx=(10, 0))
+        
+        # Ollama status label
+        self.status_label = ttk.Label(main_frame, text="", font=('Arial', 9), foreground='gray')
+        self.status_label.grid(row=2, column=1, sticky=tk.E, padx=(10, 0), pady=(35, 0))
         
         # TTS Model
         ttk.Label(main_frame, text="TTS Voice:", font=('Arial', 11)).grid(row=3, column=0, sticky=tk.W, pady=10)
@@ -92,19 +101,39 @@ class KaiSettingsApp:
         
     def load_ollama_models(self):
         """Load available Ollama models."""
+        # Default popular models
+        default_models = [
+            'llama3.2:3b',
+            'llama3.2:1b',
+            'llama3.1:8b',
+            'llama3:8b',
+            'mistral:7b',
+            'phi3:mini',
+            'gemma2:2b',
+            'qwen2.5:7b'
+        ]
+        
         try:
             client = ollama.Client()
             models = client.list()
             model_names = [m['name'] for m in models.get('models', [])]
             
             if model_names:
-                self.llm_combo['values'] = model_names
+                # Combine installed models with defaults (remove duplicates)
+                all_models = list(dict.fromkeys(model_names + default_models))
+                self.llm_combo['values'] = all_models
+                # Add status indicator
+                self.ollama_status = "✓ Connected to Ollama"
             else:
-                self.llm_combo['values'] = ['No models found']
-                messagebox.showwarning("Warning", "No Ollama models found. Install models with: ollama pull llama3.2")
+                # No models installed, show defaults
+                self.llm_combo['values'] = default_models
+                self.ollama_status = "⚠ No models installed"
         except Exception as e:
-            self.llm_combo['values'] = ['Error loading models']
-            messagebox.showerror("Error", f"Failed to connect to Ollama: {str(e)}")
+            # Ollama not running or error, still allow manual entry
+            self.llm_combo['values'] = default_models
+            self.ollama_status = "⚠ Ollama not connected"
+            # Don't show popup - just set status
+            print(f"Note: Could not connect to Ollama - {str(e)}")
             
     def save_settings(self):
         """Save settings to config."""

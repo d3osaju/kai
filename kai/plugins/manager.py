@@ -44,11 +44,12 @@ class PluginManager:
         plugin_instance = getattr(module, "plugin")
         return plugin_instance
     
-    async def execute_intent(self, intent: Intent) -> str:
+    async def execute_intent(self, intent: Intent, conversation_history: list = None) -> str:
         """Execute an intent using appropriate plugin.
         
         Args:
             intent: Intent to execute
+            conversation_history: Optional conversation history for context
             
         Returns:
             Response text
@@ -56,7 +57,11 @@ class PluginManager:
         # Find plugin that can handle this intent
         for plugin in self.plugins.values():
             if plugin.can_handle(intent):
-                return await plugin.handle_intent(intent)
+                # Pass history if plugin supports it
+                if hasattr(plugin, 'handle_intent_with_history') and conversation_history:
+                    return await plugin.handle_intent_with_history(intent, conversation_history)
+                else:
+                    return await plugin.handle_intent(intent)
         
         # No plugin found
         return f"I don't know how to handle: {intent.raw_text}"

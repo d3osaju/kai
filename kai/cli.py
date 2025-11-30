@@ -122,6 +122,7 @@ def voice(sensitivity, speak, speed, volume):
     console.print(f"Voice speed: {speed}x")
     console.print(f"Volume: {volume}%")
     console.print(f"Voice responses: {'Enabled' if speak else 'Disabled'}")
+    console.print(f"💭 Conversation memory: Enabled (remembers last 10 exchanges)")
     console.print("Press Ctrl+C to stop\n")
     
     try:
@@ -187,9 +188,17 @@ def voice(sensitivity, speak, speed, volume):
                 silence_count = 0  # Reset silence counter
                 unclear_count = 0  # Reset unclear counter
                 console.print(f"[cyan]You:[/cyan] {text}")
-                console.print("[dim]🔄 Processing...[/dim]")
-                response = assistant.query(text)
-                console.print(f"[green]Kai:[/green] {response}\n")
+                
+                # Check for memory clear commands
+                if any(word in text.lower() for word in ['forget', 'clear memory', 'reset conversation', 'start over']):
+                    assistant.clear_history()
+                    response = "Okay, I've cleared my memory. What would you like to talk about?"
+                    console.print(f"[green]Kai:[/green] {response}")
+                    console.print("[dim]💭 Conversation history cleared[/dim]\n")
+                else:
+                    console.print("[dim]🔄 Processing...[/dim]")
+                    response = assistant.query(text)
+                    console.print(f"[green]Kai:[/green] {response}\n")
                 
                 # Clean response for speech (remove markdown formatting)
                 speech_response = _clean_for_speech(response)

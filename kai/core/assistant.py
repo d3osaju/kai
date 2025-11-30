@@ -19,6 +19,8 @@ class Assistant:
         self.config = Config(config_path)
         self.intent_recognizer = IntentRecognizer(self.config)
         self.plugin_manager = PluginManager(self.config)
+        self.conversation_history = []
+        self.max_history = 10  # Keep last 10 exchanges
         
     async def initialize(self):
         """Initialize async components."""
@@ -47,7 +49,33 @@ class Assistant:
         # Recognize intent
         intent = await self.intent_recognizer.recognize(text)
         
-        # Execute via plugin
-        response = await self.plugin_manager.execute_intent(intent)
+        # Execute via plugin with conversation history
+        response = await self.plugin_manager.execute_intent(intent, self.conversation_history)
+        
+        # Add to conversation history
+        self.conversation_history.append({
+            "role": "user",
+            "content": text
+        })
+        self.conversation_history.append({
+            "role": "assistant",
+            "content": response
+        })
+        
+        # Trim history if too long
+        if len(self.conversation_history) > self.max_history * 2:
+            self.conversation_history = self.conversation_history[-self.max_history * 2:]
         
         return response
+    
+    def clear_history(self):
+        """Clear conversation history."""
+        self.conversation_history = []
+    
+    def get_history(self):
+        """Get conversation history.
+        
+        Returns:
+            List of conversation messages
+        """
+        return self.conversation_history.copy()
